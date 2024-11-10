@@ -9,6 +9,13 @@
     state: started
     enabled: yes
 
+# Allow SSH on port 22 explicitly
+- name: Allow SSH on port 22
+  ansible.builtin.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
 - name: Allow specified ports on UFW
   ufw:
     rule: allow

@@ -1,0 +1,4 @@
+# Define additional ports to open
+open_ports:
+  - 80       # HTTP
+  - 443      # HTTPS
