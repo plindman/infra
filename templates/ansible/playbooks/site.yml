@@ -6,3 +6,4 @@
     - common
     - ssh
     - firewall
+    - docker

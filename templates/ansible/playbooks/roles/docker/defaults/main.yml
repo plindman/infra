@@ -1,0 +1,3 @@
+---
+# roles/docker/defaults/main.yml
+# Default variables for Docker role
