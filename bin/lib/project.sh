@@ -1,34 +1,46 @@
 #!/bin/bash
 # lib/project.sh
 
+# Get absolute path to project directory
+get_projects_root_dir() {
+    echo "$ROOT_DIR/projects"
+}
+
+get_project_dir() {
+    local project_name=$1
+    echo "$ROOT_DIR/projects/infra/$project_name"
+}
+
 # Initialize a new project
 init_project() {
     local project_name=$1
-    local project_dir=$(get_project_dir "$project_name")
     local server_names=$2
+    local config_file=$(get_config_file_path "$project_name")
+    local project_dir=$(get_project_dir "$project_name")
 
-    if [ -d "$project_dir" ]; then
+    if [ -f "$config_file" ] || [ -d "$project_dir" ]; then
         print_error "Error: Project '$project_name' already exists"
         exit 1
     fi
 
-    print_info "Creating new project: $project_name"
-    mkdir -p "$project_dir"
+    if [ ! -d "$(get_projects_root_dir)" ]; then
+        mkdir -p "$(get_projects_root_dir)"
+    fi
 
-    create_config_file $1 $2    
+    print_info "Creating new project: $project_name"
+    create_config_file $1 $2
+    mkdir -p "$project_dir"
 
     print_success "Project initialized at: $project_dir"
 }
 
 prepare_project() {
     local project_name=$1
-    local project_dir=$(get_project_dir "$project_name")
-    local config_file=$(get_config_file_name "$project_name")
     
     print_info "Preparing project: $project_name"
     
     # Validate configuration
-    validate_config "$config_file"
+    validate_config "$project_name"
 
     # Generate SSH keys for all servers
     generate_project_ssh_keys "$project_name"
@@ -42,7 +54,7 @@ prepare_project() {
 deploy_project() {
     local project_name=$1
     local project_dir=$(get_project_dir "$project_name")
-    local config_file=$(get_config_file_name "$project_name")
+    local config_file=$(get_config_file_path "$project_name")
     
     print_info "Deploying project: $project_name"
     
