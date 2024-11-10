@@ -2,7 +2,7 @@
 # lib/validate.sh
 
 validate_config() {
-    local config_file=$1
+    local config_file=$(get_config_file_path "$project_name")
     local errors=()
     
     # Check if file exists
