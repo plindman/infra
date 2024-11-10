@@ -25,5 +25,5 @@ print_warn() {
 }
 
 print_error() {
-    echo -e "${RED}[ERROR]]{RESET} $1"
+    echo -e "${RED}[ERROR]]${RESET} $1"
 }
