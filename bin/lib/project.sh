@@ -48,6 +48,9 @@ prepare_project() {
     # Prepare Terraform workspace
     prepare_terraform_workspace "$project_name"
     
+    # Prepare Ansible playbooks for this project
+    prepare_ansible "$project_name"
+
     print_success "Project preparation completed: $project_name"
 }
 
