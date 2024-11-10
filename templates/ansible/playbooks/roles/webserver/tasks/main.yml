@@ -1,0 +1,29 @@
+---
+# Ensure directory for static site exists
+- name: Create directory for static site Docker setup
+  ansible.builtin.file:
+    path: /opt/docker/static-site
+    state: directory
+    mode: '0755'
+
+# Copy Dockerfile for the static site
+- name: Copy Dockerfile for static site
+  ansible.builtin.copy:
+    src: files/Dockerfile
+    dest: /opt/docker/static-site/Dockerfile
+    mode: '0644'
+
+# Build and start the static site container
+- name: Build and start static site container
+  ansible.builtin.docker_image:
+    path: /opt/docker/static-site
+    name: static-site
+    source: build
+
+- name: Run static site container
+  ansible.builtin.docker_container:
+    name: static-site
+    image: static-site
+    ports:
+      - "8080:80"  # Internal port 8080, as expected by Nginx
+    restart_policy: always
