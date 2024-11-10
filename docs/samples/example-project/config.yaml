@@ -1,0 +1,24 @@
+# projects/example-project/config.yaml
+
+name: example-project
+
+defaults:
+  server_type: cx22
+  image: ubuntu-24.04
+  location: hel1
+  labels:
+    environment: development
+
+servers:
+  web-1:
+    server_type: cx21  # Override default
+    labels:
+      role: web
+  web-2:
+    server_type: cx21
+    labels:
+      role: web
+  db-1:
+    server_type: cx31
+    labels:
+      role: database
