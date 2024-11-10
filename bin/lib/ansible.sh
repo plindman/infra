@@ -42,16 +42,30 @@ create_ansible_inventory() {
 }
 
 # Run Ansible playbook
+prepare_ansible() {
+    local project_name=$1
+    local project_dir=$(get_project_dir "$project_name")
+    local ansible_dir=$(get_ansible_dir "$project_name")
+    local inventory_file="$ansible_dir/hosts.ini"
+
+    # Copy playbook template if it doesn't exist
+    cp -r "$ROOT_DIR/templates/ansible" $project_dir
+    print_info "Ansible playbooks copied to project folder $ansible_dir"
+}
+
+# Run Ansible playbook
 run_ansible() {
     local project_name=$1
     local ansible_dir=$(get_ansible_dir "$project_name")
     local inventory_file="$ansible_dir/hosts.ini"
 
-    # Copy playbook template if it doesn't exist
-    if [ ! -f "$ansible_dir/playbook.yml" ]; then
-        cp "$ROOT_DIR/templates/ansible/playbooks/setup_servers.yml" "$ansible_dir/playbook.yml"
-    fi
+    # Step 1: Generate the filename based on the existence of custom.yml
+    playbook_file=$(if [ -f "$ansible_dir/playbooks/custom.yml" ]; then echo 'custom.yml'; else echo 'site.yml'; fi)
+    playbook_path="$ansible_dir/playbooks/$playbook_file"
 
-    # Run playbook
-    ansible-playbook -i "$inventory_file" "$ansible_dir/playbook.yml"
+    # Step 2: Echo the selected playbook file
+    echo "Using playbook: $playbook_path"
+
+    # Step 3: Run the ansible-playbook command with the selected playbook
+    ansible-playbook -i "$inventory_file" "$playbook_path"
 }
