@@ -8,24 +8,9 @@ load_env() {
         source .env
         # export HCLOUD_TOKEN
         export TF_VAR_hcloud_token="$HCLOUD_TOKEN"
-        print_info ".env loaded successfully."
+        print_debug ".env loaded successfully."
     else
         print_error "No .env file found. Exiting."
-        exit 1
-    fi
-}
-
-# Get absolute path to project directory
-get_project_dir() {
-    local project_name=$1
-    echo "$ROOT_DIR/projects/$project_name"
-}
-
-# Validate project exists
-validate_project() {
-    local project_dir=$(get_project_dir "$1")
-    if [ ! -d "$project_dir" ]; then
-        echo "Error: Project '$1' not found"
         exit 1
     fi
 }
@@ -40,3 +25,13 @@ list_projects() {
         fi
     done
 }
+
+# Validate project exists
+validate_project() {
+    local project_dir=$(get_project_dir "$1")
+    if [ ! -d "$project_dir" ]; then
+        echo "Error: Project '$1' not found"
+        exit 1
+    fi
+}
+
