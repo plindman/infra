@@ -1,0 +1,25 @@
+- name: Ensure UFW is installed
+  apt:
+    name: ufw
+    state: present
+
+- name: Ensure UFW is enabled and running
+  service:
+    name: ufw
+    state: started
+    enabled: yes
+
+- name: Allow specified ports on UFW
+  ufw:
+    rule: allow
+    name: "{{ item }}"
+  loop: "{{ open_ports }}"
+
+- name: Deny all other inbound traffic (optional)
+  ufw:
+    rule: deny
+    direction: in
+
+- name: Enable UFW
+  ufw:
+    state: enabled

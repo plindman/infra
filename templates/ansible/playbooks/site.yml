@@ -1,0 +1,8 @@
+- name: Setup and harden servers
+  hosts: servers
+  become: yes
+
+  roles:
+    - common
+    - ssh
+    - firewall

@@ -1,0 +1,6 @@
+- name: Disable password-based SSH login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: "PasswordAuthentication {{ ssh_password_auth }}"
+  notify: Restart SSH
