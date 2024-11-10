@@ -54,7 +54,7 @@ prepare_terraform_workspace() {
 generate_tfvars() {
     local project_name=$1
     local terraform_dir=$(get_terraform_dir "$project_name")
-    local config_file=$(get_config_file_name $project_name)
+    local config_file=$(get_config_file_path $project_name)
 
     local tfvars_file="$terraform_dir/terraform.tfvars"
 
