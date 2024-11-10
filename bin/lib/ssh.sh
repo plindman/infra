@@ -5,7 +5,7 @@
 generate_project_ssh_keys() {
     local project_name=$1
     local server_names
-    server_names=$(get_server_names "$project_name")
+    server_names=$(get_server_names_from_config "$project_name")
 
     for server_name in $server_names; do
         generate_ssh_key $server_name
@@ -29,13 +29,23 @@ generate_ssh_key() {
 update_known_hosts () {
     local ip=$1
 
+    # Check if known_hosts file exists, create it if it doesn't
+    local known_hosts="$HOME/.ssh/known_hosts"
+    if [ ! -f $known_hosts ]; then
+        touch $known_hosts
+        print_info "Created new $known_hosts file."
+    fi
+
     # Check if the IP already exists in known_hosts
     if ! ssh-keygen -F "$ip" > /dev/null 2>&1; then
-        print_info "IP $ip not found in known_hosts. Adding it."
+        print_info "IP $ip not found in $known_hosts. Adding it."
+        
         # Generate the SSH key for the IP if it's not in known_hosts
         ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ip" 2>/dev/null
-        ssh-keyscan -H "$ip" >> "$HOME/.ssh/known_hosts"
+
+        # Use ssh-keyscan to add the key to known_hosts (suppress extra comments)
+        ssh-keyscan -H "$ip" 2>/dev/null | tee -a "$HOME/.ssh/known_hosts" > /dev/null
     else
-        print_warn "IP $ip already exists in known_hosts. Skipping ssh-keygen."
+        print_warn "IP $ip already exists in known_hosts. Skipping ssh-keygen/ssh-keyscan."
     fi
 }
