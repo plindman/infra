@@ -1,0 +1,25 @@
+---
+# Ensure the directory for Nginx config exists
+- name: Create directory for Nginx configuration
+  ansible.builtin.file:
+    path: /opt/docker/nginx
+    state: directory
+    mode: '0755'
+
+# Copy Nginx configuration file
+- name: Copy Nginx configuration file
+  ansible.builtin.copy:
+    src: files/nginx.conf
+    dest: /opt/docker/nginx/nginx.conf
+    mode: '0644'
+
+# Start Nginx container as a reverse proxy
+- name: Start Nginx container
+  ansible.builtin.docker_container:
+    name: nginx-proxy
+    image: nginx:latest
+    volumes:
+      - /opt/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"  # Expose Nginx on port 80
+    restart_policy: always
