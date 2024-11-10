@@ -1,0 +1,34 @@
+---
+- name: Setup and harden servers
+  hosts: servers
+  become: yes  # run as root
+  tasks:
+
+    # 1. Update the system
+    - name: Update all packages to the latest version
+      apt:
+        update_cache: yes
+        upgrade: yes
+        autoremove: yes
+        autoclean: yes
+
+    # 2. Disable password-based SSH login
+    - name: Disable password-based SSH login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+      notify: Restart SSH
+
+    # 3. Ensure SSH daemon is running
+    - name: Ensure sshd is running and enabled
+      service:
+        name: ssh
+        state: restarted
+        enabled: yes
+
+  handlers:
+    - name: Restart SSH
+      service:
+        name: ssh
+        state: restarted

@@ -1,0 +1,10 @@
+name: [project-name]
+
+defaults:
+  server_type: cx22
+  image: ubuntu-24.04
+  location: hel1
+  labels:
+    environment: development
+
+servers: []

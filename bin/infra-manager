@@ -1,0 +1,84 @@
+#!/bin/bash
+set -e  # Exit on any error
+
+# infra-manager - Main command script
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+LIB_DIR="$SCRIPT_DIR/lib"
+
+# Source all library functions
+source "$LIB_DIR/print.sh"
+source "$LIB_DIR/utils.sh"
+source "$LIB_DIR/config.sh"
+source "$LIB_DIR/project.sh"
+source "$LIB_DIR/terraform.sh"
+source "$LIB_DIR/ansible.sh"
+source "$LIB_DIR/ssh.sh"
+source "$LIB_DIR/install.sh"
+source "$LIB_DIR/validate.sh"
+
+usage() {
+    echo "Usage: infra-manager <command> <project_name> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  init <project_name>    Initialize a new project"
+    echo "  prepare <project_name>  Prepare servers for a project"
+    echo "  deploy <project_name>  Deploy servers for a project"
+    echo "  destroy <project_name> Destroy servers for a project"
+    echo "  list                   List all projects"
+    echo ""
+    exit 1
+}
+
+# Ensure minimum arguments
+if [ $# -lt 1 ]; then
+    usage
+fi
+
+# Check for required tools before executing any command
+check_required_tools
+
+# Make sure that everything loaded into env variables
+load_env
+
+COMMAND=$1
+shift
+
+case $COMMAND in
+    init)
+        if [ $# -lt 1 ]; then
+            print_error "Error: Project name required"
+            usage
+        fi
+        init_project "$1" "$2"
+        ;;
+    prepare)
+        if [ $# -lt 1 ]; then
+            print_error "Error: Project name required"
+            usage
+        fi
+        prepare_project "$1"
+        ;;
+    deploy)
+        if [ $# -lt 1 ]; then
+            print_error "Error: Project name required"
+            usage
+        fi
+        deploy_project "$1"
+        ;;
+    destroy)
+        if [ $# -lt 1 ]; then
+            print_error "Error: Project name required"
+            usage
+        fi
+        destroy_project "$1"
+        ;;
+    list)
+        list_projects
+        ;;
+    *)
+        print_error "Unknown command: $COMMAND"
+        usage
+        ;;
+esac
