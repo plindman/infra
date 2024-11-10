@@ -1,0 +1,5 @@
+# namecheap API credentials and domain information
+namecheap_api_user: "your_api_username"
+namecheap_api_key: "your_api_key"
+namecheap_domain: "yourdomain.com"  # Replace with your domain
+namecheap_host: "@"  # Use @ for the root domain, or set a subdomain like 'www'

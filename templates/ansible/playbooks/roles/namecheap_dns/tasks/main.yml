@@ -1,0 +1,38 @@
+---
+# Get the server's public IP
+- name: Get public IP address
+  ansible.builtin.uri:
+    url: "http://ifconfig.me"  # External IP service, alternatives: http://icanhazip.com or https://ipinfo.io/ip
+    return_content: yes
+  register: public_ip
+
+# Debug to see IP for verification
+- name: Display public IP address
+  ansible.builtin.debug:
+    var: public_ip.content
+
+# Update Namecheap DNS record with the new IP
+- name: Update Namecheap DNS record
+  ansible.builtin.uri:
+    url: "https://api.namecheap.com/xml.response"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      ApiUser: "{{ namecheap_api_user }}"
+      ApiKey: "{{ namecheap_api_key }}"
+      UserName: "{{ namecheap_api_user }}"
+      ClientIp: "{{ ansible_default_ipv4.address }}"  # Your server IP (whitelisted in Namecheap API)
+      Command: "namecheap.domains.dns.setHosts"
+      SLD: "{{ namecheap_domain.split('.')[0] }}"  # Second Level Domain (e.g., 'yourdomain' in 'yourdomain.com')
+      TLD: "{{ namecheap_domain.split('.')[1] }}"   # Top Level Domain (e.g., 'com' in 'yourdomain.com')
+      HostName1: "{{ namecheap_host }}"
+      RecordType1: "A"
+      Address1: "{{ public_ip.content }}"
+      TTL1: "300"  # Set TTL to 5 minutes, or adjust as needed
+    return_content: yes
+  register: dns_update_response
+
+# Display the response for verification
+- name: Display DNS update response
+  ansible.builtin.debug:
+    var: dns_update_response.content
