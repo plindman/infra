@@ -1,6 +1,6 @@
 - name: Ensure UFW is installed
   apt:
-    name: ufw
+    package: ufw
     state: present
 
 - name: Ensure UFW is enabled and running
@@ -8,6 +8,14 @@
     name: ufw
     state: started
     enabled: yes
+
+- name: Configure ufw defaults
+  ufw: direction={{ item.direction }} policy={{ item.policy }}
+  with_items:
+    - { direction: 'incoming', policy: 'deny' }
+    - { direction: 'outgoing', policy: 'allow' }
+  notify:
+    - restart ufw
 
 # Allow SSH on port 22 explicitly
 - name: Allow SSH on port 22
@@ -19,7 +27,8 @@
 - name: Allow specified ports on UFW
   ufw:
     rule: allow
-    name: "{{ item }}"
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
   loop: "{{ open_ports }}"
 
 - name: Deny all other inbound traffic (optional)
@@ -28,5 +37,4 @@
     direction: in
 
 - name: Enable UFW
-  ufw:
-    state: enabled
+  ufw: state=enabled
