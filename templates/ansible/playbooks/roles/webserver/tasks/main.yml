@@ -18,7 +18,7 @@
   ansible.builtin.docker_image:
     path: /opt/docker/static-site
     name: static-site
-    source: build
+    build: yes
 
 - name: Run static site container
   ansible.builtin.docker_container:
